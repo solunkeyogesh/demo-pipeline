@@ -31,7 +31,19 @@ pipeline {
         }
       }
     }
-
+    stage('Kube Diagnostics') {
+      steps {
+        sh '''
+          set -e
+          echo "KUBECONFIG=${KUBECONFIG:-/var/jenkins_home/.kube/config}"
+          ls -l /var/jenkins_home/.kube || true
+          kubectl version --client
+          kubectl config get-contexts
+          kubectl config current-context
+          kubectl get ns
+        '''
+      }
+    }
     stage('Deploy to Kubernetes') {
       steps {
         // If you mounted ~/.kube to Jenkins home, kubectl will use /var/jenkins_home/.kube/config
